@@ -1,2 +1,14 @@
-/** Package entry — public exports are added in later todos. */
-export const PACKAGE_NAME = "carnojs-better-auth";
+export { CarnoBetterAuth } from "./entry.ts";
+
+export { BetterAuthService } from "./better-auth.service.ts";
+export { BetterAuthMiddleware } from "./middleware/better-auth.middleware.ts";
+export { BetterAuthConfig } from "./better-auth.config.ts";
+
+export {
+  AUTH_SESSION_KEY,
+  AUTH_USER_KEY,
+  DEFAULT_AUTH_BASE_PATH,
+} from "./constants.ts";
+
+export type { BetterAuthModuleOptions } from "./interfaces/better-auth-module-options.interface.ts";
+export type { AuthContext, AuthLocals } from "./types.ts";
