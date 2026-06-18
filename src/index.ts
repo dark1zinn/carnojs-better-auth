@@ -11,4 +11,5 @@ export {
 } from "./constants.ts";
 
 export type { BetterAuthModuleOptions } from "./interfaces/better-auth-module-options.interface.ts";
+export type { CarnoBetterAuthOptions } from "./interfaces/carno-better-auth-options.interface.ts";
 export type { AuthContext, AuthLocals } from "./types.ts";
