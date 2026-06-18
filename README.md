@@ -106,15 +106,40 @@ Keep `basePath` aligned with Better Auth's own `basePath` option so route regist
 
 ## App-level URL prefix
 
-The plugin registers routes on the Carno instance you attach it to. If your app serves controllers under a prefix (for example `/api`), mount the plugin on that same scoped app so auth routes follow the same prefix:
+Carno does not support `app.use("/api", subApp)` path-prefix mounting. Prefix URLs on each controller and align Better Auth with the same `basePath`:
 
 ```typescript
-const api = new Carno();
-api.use(CarnoBetterAuth({ /* ... */ }));
-api.controllers([MeController]);
+import { Carno, Controller, Get, Middleware } from "@carno.js/core";
+import { CarnoBetterAuth, BetterAuthMiddleware } from "carnojs-better-auth";
 
-app.use("/api", api); // auth at /api/auth, controllers at /api/me
+@Controller("/api/me")
+@Middleware(BetterAuthMiddleware)
+class ApiMeController {
+  @Get()
+  me() {
+    return { ok: true };
+  }
+}
+
+const app = new Carno();
+
+app.use(
+  CarnoBetterAuth({
+    basePath: "/api/auth",
+    baseURL: "http://localhost:3000",
+    // ...
+  }),
+);
+
+app.controllers([ApiMeController]);
+app.listen(3000);
+// Auth:     http://localhost:3000/api/auth/*
+// API:      http://localhost:3000/api/me
 ```
+
+For nested controllers, Carno also supports `@Controller({ path: "/api", children: [ApiMeController] })` so child routes inherit the parent path. See the [Carno.js repository](https://github.com/carnojs/carno.js) for controller nesting details.
+
+When using a custom auth path, set the Better Auth client `baseURL` to include it (for example `http://localhost:3000/api/auth`).
 
 ## Public API
 
