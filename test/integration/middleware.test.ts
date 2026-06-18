@@ -10,7 +10,8 @@ import { AUTH_USER_KEY } from "../../src/constants.ts";
 import { BetterAuthService } from "../../src/better-auth.service.ts";
 import {
   AUTH_UNAVAILABLE_MESSAGE,
-  UNAUTHORIZED_MESSAGE,
+  UNAUTHORIZED_ERROR_CODE,
+  UNAUTHORIZED_ERROR_MESSAGE,
 } from "../../src/middleware/resolve-protected-session.ts";
 import { BetterAuthMiddleware } from "../../src/middleware/better-auth.middleware.ts";
 import { withAuthApp } from "../helpers/test-app.ts";
@@ -32,7 +33,11 @@ describe("BetterAuthMiddleware", () => {
     await withAuthApp(
       async ({ harness }) => {
         const response = await harness.get("/profile");
+        const body = await readJson<{ code: string; message: string }>(response);
+
         expect(response.status).toBe(401);
+        expect(body.code).toBe(UNAUTHORIZED_ERROR_CODE);
+        expect(body.message).toBe(UNAUTHORIZED_ERROR_MESSAGE);
       },
       { controllers: [ProfileController], services: [BetterAuthMiddleware] },
     );
@@ -94,10 +99,11 @@ describe("BetterAuthMiddleware", () => {
     await withTestApp(
       async (harness) => {
         const response = await harness.get("/profile");
-        const body = await readJson<{ message: string }>(response);
+        const body = await readJson<{ code: string; message: string }>(response);
 
         expect(response.status).toBe(401);
-        expect(body.message).toBe(UNAUTHORIZED_MESSAGE);
+        expect(body.code).toBe(UNAUTHORIZED_ERROR_CODE);
+        expect(body.message).toBe(UNAUTHORIZED_ERROR_MESSAGE);
       },
       {
         listen: true,

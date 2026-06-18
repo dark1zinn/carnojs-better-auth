@@ -112,9 +112,13 @@ class MeController {
 }
 ```
 
-Unauthenticated requests receive `401` with `{ "message": "Unauthorized" }`.
+Unauthenticated requests receive **401** with Better Auth's standard JSON error shape:
 
-When session lookup fails unexpectedly (for example a database outage), protected routes return `503` with Carno's standard `{ "statusCode": 503, "message": "Authentication service unavailable" }` payload instead of an unhandled `500`.
+```json
+{ "code": "UNAUTHORIZED", "message": "Unauthorized" }
+```
+
+When session lookup fails unexpectedly (for example a database outage), protected routes return **503** with Carno's standard `{ "statusCode": 503, "message": "Authentication service unavailable" }` payload instead of an unhandled `500`.
 
 ## Programmatic access
 
