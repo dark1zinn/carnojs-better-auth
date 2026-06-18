@@ -18,10 +18,26 @@ declare module "@carno.js/core" {
   }
 
   export class Carno {
-    constructor(config?: { exports?: unknown[] });
+    constructor(config?: { exports?: unknown[]; cors?: CorsConfig });
     services(services: unknown): this;
     route(method: string, path: string, handler: unknown): this;
     get<T>(token: new (...args: never[]) => T): T;
+  }
+
+  export interface CorsConfig {
+    origins: string | string[] | RegExp | ((origin: string) => boolean);
+    methods?: string[];
+    allowedHeaders?: string[];
+    exposedHeaders?: string[];
+    credentials?: boolean;
+    maxAge?: number;
+  }
+
+  export class CorsHandler {
+    constructor(config: CorsConfig);
+    preflight(origin: string): Response;
+    apply(response: Response, origin: string): Response;
+    isAllowed(origin: string): boolean;
   }
 
   export interface TestOptions {

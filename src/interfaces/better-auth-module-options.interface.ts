@@ -1,4 +1,4 @@
 import type { BetterAuthOptions } from "better-auth";
 
-/** Options accepted by {@link CarnoBetterAuth}. */
+/** Better Auth options passed to {@link CarnoBetterAuth}. */
 export type BetterAuthModuleOptions = BetterAuthOptions;

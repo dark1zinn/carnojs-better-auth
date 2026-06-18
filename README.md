@@ -40,6 +40,31 @@ Better Auth routes are mounted at **`/auth`** by default (for example `/auth/sig
 
 Set `baseURL` in your Better Auth options (or the `BETTER_AUTH_URL` env var). Better Auth uses it for callbacks, redirects, and cookie handling.
 
+## Cross-origin requests (CORS)
+
+Auth routes are registered programmatically on the Carno router, so they do not automatically inherit CORS headers from a host `Carno({ cors })` instance. Pass the same `cors` config to `CarnoBetterAuth` when a browser client calls `/auth/*` from another origin:
+
+```typescript
+const cors = {
+  origins: "http://localhost:5173",
+  credentials: true,
+};
+
+const app = new Carno({ cors });
+
+app.use(
+  CarnoBetterAuth({
+    baseURL: "http://localhost:3000",
+    cors, // required for auth routes to receive Access-Control-* headers
+    trustedOrigins: ["http://localhost:5173"],
+    // ...
+  }),
+);
+```
+
+- **`cors`** — mirrors [Carno CORS config](https://github.com/carnojs/carno.js); wraps auth handlers and handles `OPTIONS` preflight on `/auth/*`.
+- **`trustedOrigins`** — Better Auth's own origin allowlist for cookies and CSRF ([cookies guide](https://www.better-auth.com/docs/concepts/cookies)). Configure both for cross-origin SPAs.
+
 ## Protecting routes
 
 Apply `BetterAuthMiddleware` to controllers that require a session. Authenticated user and session are exposed via `@Locals`:
@@ -154,6 +179,7 @@ When using a custom auth path, set the Better Auth client `baseURL` to include i
 | `AUTH_USER_KEY` / `AUTH_SESSION_KEY` | Locals keys for `@Locals()` |
 | `DEFAULT_AUTH_BASE_PATH` | Default mount path (`/auth`) |
 | `BetterAuthModuleOptions` | Alias of Better Auth's `BetterAuthOptions` |
+| `CarnoBetterAuthOptions` | Plugin options (`BetterAuthModuleOptions` + optional `cors`) |
 | `AuthContext` / `AuthLocals` | Session typing helpers |
 
 ## Development

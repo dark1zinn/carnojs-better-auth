@@ -6,7 +6,7 @@ import {
 import type { TestHelpers } from "better-auth/plugins";
 import { BetterAuthService } from "../../src/better-auth.service.ts";
 import { CarnoBetterAuth } from "../../src/entry.ts";
-import type { BetterAuthModuleOptions } from "../../src/interfaces/better-auth-module-options.interface.ts";
+import type { CarnoBetterAuthOptions } from "../../src/interfaces/carno-better-auth-options.interface.ts";
 import { createTestAuthOptions } from "./test-auth.ts";
 
 export type AuthTestContext = {
@@ -16,7 +16,7 @@ export type AuthTestContext = {
 };
 
 export type AuthTestOptions = Omit<TestOptions, "plugins" | "listen"> & {
-  authOptions?: BetterAuthModuleOptions;
+  authOptions?: CarnoBetterAuthOptions;
 };
 
 async function resolveTestHelpers(
