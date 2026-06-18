@@ -1,6 +1,9 @@
 # Nix environment
 .direnv
 
+# Docs
+issues/
+
 # Logs
 logs
 *.log
