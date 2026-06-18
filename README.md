@@ -104,6 +104,8 @@ CarnoBetterAuth({
 
 Keep `basePath` aligned with Better Auth's own `basePath` option so route registration and the auth handler agree.
 
+Use a dedicated path segment such as `/auth` or `/api/auth`. The value `/` (or an empty string) is rejected because it would register a catch-all `/*` route and hijack your application.
+
 ## App-level URL prefix
 
 Carno does not support `app.use("/api", subApp)` path-prefix mounting. Prefix URLs on each controller and align Better Auth with the same `basePath`:

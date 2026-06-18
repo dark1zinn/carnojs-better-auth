@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import {
+  assertSafeAuthBasePath,
   authWildcardPath,
   DEFAULT_AUTH_BASE_PATH,
   isAuthPath,
@@ -30,5 +31,18 @@ describe("auth path helpers", () => {
 
   test("authWildcardPath uses Bun single-segment wildcard routes", () => {
     expect(authWildcardPath("/auth")).toBe("/auth/*");
+    expect(authWildcardPath("/api/auth")).toBe("/api/auth/*");
+  });
+
+  test("assertSafeAuthBasePath rejects the application root", () => {
+    expect(() => assertSafeAuthBasePath("/")).toThrow(/Invalid basePath/);
+    expect(() => assertSafeAuthBasePath("")).toThrow(/Invalid basePath/);
+    expect(() => assertSafeAuthBasePath("/")).toThrow(/application root/);
+  });
+
+  test("assertSafeAuthBasePath accepts dedicated auth paths", () => {
+    expect(assertSafeAuthBasePath("/auth")).toBe("/auth");
+    expect(assertSafeAuthBasePath("/api/auth")).toBe("/api/auth");
+    expect(assertSafeAuthBasePath("api/auth/")).toBe("/api/auth");
   });
 });
