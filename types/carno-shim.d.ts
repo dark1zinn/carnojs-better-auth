@@ -40,6 +40,13 @@ declare module "@carno.js/core" {
     isAllowed(origin: string): boolean;
   }
 
+  export class HttpException extends Error {
+    readonly statusCode: number;
+    toResponse(): Response;
+  }
+
+  export class ServiceUnavailableException extends HttpException {}
+
   export interface TestOptions {
     config?: { exports?: unknown[]; disableStartupLog?: boolean };
     listen?: boolean | number;

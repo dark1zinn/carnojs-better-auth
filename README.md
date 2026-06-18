@@ -97,6 +97,8 @@ class MeController {
 
 Unauthenticated requests receive `401` with `{ "message": "Unauthorized" }`.
 
+When session lookup fails unexpectedly (for example a database outage), protected routes return `503` with Carno's standard `{ "statusCode": 503, "message": "Authentication service unavailable" }` payload instead of an unhandled `500`.
+
 ## Programmatic access
 
 Inject `BetterAuthService` anywhere Carno DI resolves services:
