@@ -1,6 +1,6 @@
 {
   "name": "carnojs-better-auth",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "Better Auth integration plugin for Carno.js applications",
   "type": "module",
   "author": "dark1zinn",
