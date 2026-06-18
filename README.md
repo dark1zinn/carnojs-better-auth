@@ -36,9 +36,26 @@ app.use(
 app.listen(3000);
 ```
 
-Better Auth routes are mounted at **`/auth`** by default (for example `/auth/sign-up/email`, `/auth/get-session`).
+Better Auth routes are mounted at **`/auth`** by default (for example `/auth/sign-up/email`, `/auth/get-session`). [Better Auth's own docs](https://www.better-auth.com/docs/installation) often use `/api/auth`; this plugin defaults to `/auth` because Carno apps typically prefix API controllers explicitly (for example `@Controller("/api/me")`) rather than nesting entire sub-apps. Set `basePath: "/api/auth"` if you want to match the Better Auth guides exactly.
 
-Set `baseURL` in your Better Auth options (or the `BETTER_AUTH_URL` env var). Better Auth uses it for callbacks, redirects, and cookie handling.
+**Server** `baseURL` should be your app origin (for example `http://localhost:3000`). **Client** `baseURL` must include the auth path:
+
+```typescript
+import { createAuthClient } from "better-auth/client";
+import {
+  buildAuthClientBaseURL,
+  DEFAULT_AUTH_BASE_PATH,
+} from "carnojs-better-auth";
+
+export const authClient = createAuthClient({
+  baseURL: buildAuthClientBaseURL("http://localhost:3000", DEFAULT_AUTH_BASE_PATH),
+  // equivalent to: baseURL: "http://localhost:3000/auth"
+});
+```
+
+If `baseURL` includes a path that does not match `basePath` (for example `http://localhost:3000/api/auth` with default `basePath: "/auth"`), the plugin logs a startup warning with the corrected client URL.
+
+Set `baseURL` in your Better Auth server options (or the `BETTER_AUTH_URL` env var). Better Auth uses it for callbacks, redirects, and cookie handling.
 
 ## Cross-origin requests (CORS)
 
@@ -180,6 +197,7 @@ When using a custom auth path, set the Better Auth client `baseURL` to include i
 | `BetterAuthConfig` | Internal config token (advanced/testing) |
 | `AUTH_USER_KEY` / `AUTH_SESSION_KEY` | Locals keys for `@Locals()` |
 | `DEFAULT_AUTH_BASE_PATH` | Default mount path (`/auth`) |
+| `buildAuthClientBaseURL(origin, basePath)` | Client SDK base URL helper |
 | `BetterAuthModuleOptions` | Alias of Better Auth's `BetterAuthOptions` |
 | `CarnoBetterAuthOptions` | Plugin options (`BetterAuthModuleOptions` + optional `cors`) |
 | `AuthContext` / `AuthLocals` | Session typing helpers |
