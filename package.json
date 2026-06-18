@@ -1,11 +1,52 @@
 {
   "name": "carnojs-better-auth",
-  "module": "src/index.ts",
+  "version": "0.0.1",
+  "description": "Better Auth integration plugin for Carno.js applications",
   "type": "module",
-  "devDependencies": {
-    "@types/bun": "latest"
+  "author": "dark1zinn",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dark1zinn/carnojs-better-auth.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dark1zinn/carnojs-better-auth/issues"
+  },
+  "homepage": "https://github.com/dark1zinn/carnojs-better-auth#readme",
+  "keywords": [
+    "carnojs",
+    "carno.js",
+    "better-auth",
+    "authentication",
+    "bun"
+  ],
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
+    "@carno.js/core": "^1.0.0",
+    "better-auth": "^1.0.0",
     "typescript": "^5"
+  },
+  "devDependencies": {
+    "@carno.js/core": "^1.4.1",
+    "@types/bun": "latest",
+    "better-auth": "^1.6.19",
+    "tsdown": "^0.22.3",
+    "typescript": "^5.9.3"
   }
 }
