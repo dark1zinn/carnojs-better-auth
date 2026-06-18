@@ -9,6 +9,10 @@
     "allowJs": true,
     "types": ["bun"],
 
+    // Decorators (required for Carno DI)
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
     // Bundler mode
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -26,5 +30,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
-  }
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }

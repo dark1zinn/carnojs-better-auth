@@ -1,5 +1,9 @@
-/** DI token for Better Auth configuration passed into the plugin factory. */
-export const BETTER_AUTH_OPTIONS = Symbol("BETTER_AUTH_OPTIONS");
+import type { BetterAuthOptions } from "better-auth";
+
+/** DI token class for Better Auth configuration passed into the plugin factory. */
+export class BetterAuthConfig {
+  constructor(public readonly options: BetterAuthOptions) {}
+}
 
 /** Default Better Auth HTTP base path mounted by the Carno plugin. */
 export const DEFAULT_AUTH_BASE_PATH = "/auth";

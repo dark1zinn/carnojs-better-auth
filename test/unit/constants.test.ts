@@ -2,15 +2,14 @@ import { describe, expect, test } from "bun:test";
 import {
   AUTH_SESSION_KEY,
   AUTH_USER_KEY,
-  BETTER_AUTH_OPTIONS,
+  BetterAuthConfig,
   DEFAULT_AUTH_BASE_PATH,
 } from "../../src/constants.ts";
 
 describe("constants", () => {
-  test("BETTER_AUTH_OPTIONS is a unique symbol", () => {
-    expect(typeof BETTER_AUTH_OPTIONS).toBe("symbol");
-    expect(BETTER_AUTH_OPTIONS.description).toBe("BETTER_AUTH_OPTIONS");
-    expect(Symbol("BETTER_AUTH_OPTIONS")).not.toBe(BETTER_AUTH_OPTIONS);
+  test("BetterAuthConfig is a distinct DI token class", () => {
+    expect(typeof BetterAuthConfig).toBe("function");
+    expect(new BetterAuthConfig({} as never)).toBeInstanceOf(BetterAuthConfig);
   });
 
   test("locals keys are stable string identifiers", () => {
