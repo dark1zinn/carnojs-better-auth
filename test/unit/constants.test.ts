@@ -1,25 +1,50 @@
 import { describe, expect, test } from "bun:test";
+import { memoryAdapter } from "better-auth/adapters/memory";
 import {
-  AUTH_SESSION_KEY,
-  AUTH_USER_KEY,
+  authWildcardPath,
   BetterAuthConfig,
   DEFAULT_AUTH_BASE_PATH,
+  isAuthPath,
+  normalizeAuthBasePath,
+  resolveAuthOptions,
 } from "../../src/constants.ts";
 
 describe("constants", () => {
-  test("BetterAuthConfig is a distinct DI token class", () => {
-    expect(typeof BetterAuthConfig).toBe("function");
-    expect(new BetterAuthConfig({} as never)).toBeInstanceOf(BetterAuthConfig);
+  test("BetterAuthConfig creates a shared auth instance", () => {
+    const config = new BetterAuthConfig({
+      basePath: "/auth",
+      database: memoryAdapter({}),
+      emailAndPassword: { enabled: true },
+    });
+
+    expect(config.auth).toBeDefined();
+    expect(typeof config.auth.handler).toBe("function");
+    expect(config.options.basePath).toBe("/auth");
+  });
+});
+
+describe("auth path helpers", () => {
+  test("resolveAuthOptions defaults basePath to /auth", () => {
+    expect(resolveAuthOptions({} as never).basePath).toBe("/auth");
+    expect(
+      resolveAuthOptions({ basePath: "/custom" } as never).basePath,
+    ).toBe("/custom");
   });
 
-  test("locals keys are stable string identifiers", () => {
-    expect(AUTH_USER_KEY).toBe("authUser");
-    expect(AUTH_SESSION_KEY).toBe("authSession");
-    expect(AUTH_USER_KEY).not.toBe(AUTH_SESSION_KEY);
+  test("normalizeAuthBasePath trims trailing slashes", () => {
+    expect(normalizeAuthBasePath("/auth/")).toBe("/auth");
+    expect(normalizeAuthBasePath("auth")).toBe("/auth");
   });
 
-  test("default auth base path is /auth without an api prefix", () => {
+  test("isAuthPath matches base and nested auth routes", () => {
+    expect(isAuthPath("/auth", "/auth")).toBe(true);
+    expect(isAuthPath("/auth/get-session", "/auth")).toBe(true);
+    expect(isAuthPath("/auth/sign-up/email", "/auth")).toBe(true);
+    expect(isAuthPath("/api/auth", "/auth")).toBe(false);
     expect(DEFAULT_AUTH_BASE_PATH).toBe("/auth");
-    expect(DEFAULT_AUTH_BASE_PATH.startsWith("/api")).toBe(false);
+  });
+
+  test("authWildcardPath uses Bun single-segment wildcard routes", () => {
+    expect(authWildcardPath("/auth")).toBe("/auth/*");
   });
 });
