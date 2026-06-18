@@ -1,16 +1,18 @@
+import { isAPIError } from "better-auth/api";
 import { ServiceUnavailableException } from "@carno.js/core";
 import type { BetterAuthService } from "../better-auth.service.ts";
 import type { AuthContext } from "../types.ts";
+import {
+  apiErrorToResponse,
+  AUTH_UNAVAILABLE_MESSAGE,
+  unauthorizedResponse,
+} from "./auth-api-error.ts";
 
-export const UNAUTHORIZED_MESSAGE = "Unauthorized";
-export const AUTH_UNAVAILABLE_MESSAGE = "Authentication service unavailable";
-
-export function unauthorizedResponse(): Response {
-  return new Response(JSON.stringify({ message: UNAUTHORIZED_MESSAGE }), {
-    status: 401,
-    headers: { "Content-Type": "application/json" },
-  });
-}
+export { AUTH_UNAVAILABLE_MESSAGE } from "./auth-api-error.ts";
+export {
+  UNAUTHORIZED_ERROR_CODE,
+  UNAUTHORIZED_ERROR_MESSAGE,
+} from "./auth-api-error.ts";
 
 function isAuthError(error: unknown): boolean {
   if (!error || typeof error !== "object") {
@@ -44,6 +46,10 @@ export async function resolveProtectedSession(
 
     return { ok: true, session };
   } catch (error) {
+    if (isAPIError(error)) {
+      return { ok: false, response: apiErrorToResponse(error) };
+    }
+
     if (isAuthError(error)) {
       return { ok: false, response: unauthorizedResponse() };
     }
