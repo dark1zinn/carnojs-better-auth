@@ -1,5 +1,6 @@
 export { CarnoBetterAuth } from "./entry.ts";
 
+export { buildAuthClientBaseURL } from "./auth-url.ts";
 export { BetterAuthService } from "./better-auth.service.ts";
 export { BetterAuthMiddleware } from "./middleware/better-auth.middleware.ts";
 export { BetterAuthConfig } from "./better-auth.config.ts";
