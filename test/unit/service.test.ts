@@ -1,17 +1,9 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { createTestHarness, type TestHarness } from "@carno.js/core";
-import { memoryAdapter } from "better-auth/adapters/memory";
-import type { BetterAuthOptions } from "better-auth";
+import { BetterAuthConfig } from "../../src/better-auth.config.ts";
 import { BetterAuthService } from "../../src/better-auth.service.ts";
-import { BetterAuthConfig, DEFAULT_AUTH_BASE_PATH } from "../../src/constants.ts";
-
-function createTestAuthOptions(): BetterAuthOptions {
-  return {
-    basePath: DEFAULT_AUTH_BASE_PATH,
-    database: memoryAdapter({}),
-    emailAndPassword: { enabled: true },
-  };
-}
+import { DEFAULT_AUTH_BASE_PATH } from "../../src/constants.ts";
+import { createTestAuthOptions } from "../helpers/test-auth.ts";
 
 describe("BetterAuthService", () => {
   let harness: TestHarness;

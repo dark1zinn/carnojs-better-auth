@@ -1,27 +1,11 @@
 import { describe, expect, test } from "bun:test";
-import { memoryAdapter } from "better-auth/adapters/memory";
 import {
   authWildcardPath,
-  BetterAuthConfig,
   DEFAULT_AUTH_BASE_PATH,
   isAuthPath,
   normalizeAuthBasePath,
   resolveAuthOptions,
 } from "../../src/constants.ts";
-
-describe("constants", () => {
-  test("BetterAuthConfig creates a shared auth instance", () => {
-    const config = new BetterAuthConfig({
-      basePath: "/auth",
-      database: memoryAdapter({}),
-      emailAndPassword: { enabled: true },
-    });
-
-    expect(config.auth).toBeDefined();
-    expect(typeof config.auth.handler).toBe("function");
-    expect(config.options.basePath).toBe("/auth");
-  });
-});
 
 describe("auth path helpers", () => {
   test("resolveAuthOptions defaults basePath to /auth", () => {

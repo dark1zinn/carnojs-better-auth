@@ -1,12 +1,24 @@
 declare module "@carno.js/core" {
   export function Service(options?: { scope?: string }): ClassDecorator;
+  export function Controller(path: string): ClassDecorator;
+  export function Get(path?: string): MethodDecorator;
+  export function Middleware(middleware: unknown): ClassDecorator & MethodDecorator;
+  export function Locals(key?: string): ParameterDecorator;
 
-  export type MiddlewareHandler = (
-    ctx: { path: string; req: Request },
-  ) => Response | void | Promise<Response | void>;
+  export type CarnoClosure = () => Promise<Response>;
+
+  export interface Context {
+    readonly headers: Headers;
+    readonly req: Request;
+    locals: Record<string, unknown>;
+  }
+
+  export interface CarnoMiddleware {
+    handle(ctx: Context, next: CarnoClosure): Promise<Response | void>;
+  }
 
   export class Carno {
-    constructor(config?: { exports?: unknown[]; globalMiddlewares?: MiddlewareHandler[] });
+    constructor(config?: { exports?: unknown[] });
     services(services: unknown): this;
     route(method: string, path: string, handler: unknown): this;
     get<T>(token: new (...args: never[]) => T): T;

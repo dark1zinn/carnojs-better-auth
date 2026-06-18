@@ -1,14 +1,4 @@
-import { betterAuth } from "better-auth";
-import type { BetterAuthOptions } from "better-auth";
-
-/** DI token class holding a shared Better Auth instance and its options. */
-export class BetterAuthConfig {
-  public readonly auth: ReturnType<typeof betterAuth>;
-
-  constructor(public readonly options: BetterAuthOptions) {
-    this.auth = betterAuth(options);
-  }
-}
+import type { BetterAuthModuleOptions } from "./interfaces/better-auth-module-options.interface.ts";
 
 /** Default Better Auth HTTP base path mounted by the Carno plugin. */
 export const DEFAULT_AUTH_BASE_PATH = "/auth";
@@ -31,8 +21,8 @@ export const AUTH_HTTP_METHODS = [
 ] as const;
 
 export function resolveAuthOptions(
-  options: BetterAuthOptions,
-): BetterAuthOptions {
+  options: BetterAuthModuleOptions,
+): BetterAuthModuleOptions {
   return {
     ...options,
     basePath: options.basePath ?? DEFAULT_AUTH_BASE_PATH,

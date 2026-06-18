@@ -1,5 +1,5 @@
 import { Service } from "@carno.js/core";
-import { BetterAuthConfig } from "./constants.ts";
+import { BetterAuthConfig } from "./better-auth.config.ts";
 
 @Service()
 export class BetterAuthService {

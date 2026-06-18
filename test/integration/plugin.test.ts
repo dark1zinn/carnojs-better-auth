@@ -1,17 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import { withTestApp } from "@carno.js/core";
-import { memoryAdapter } from "better-auth/adapters/memory";
-import { createBetterAuthPlugin } from "../../src/better-auth.plugin.ts";
+import { CarnoBetterAuth } from "../../src/entry.ts";
 import { DEFAULT_AUTH_BASE_PATH } from "../../src/constants.ts";
+import { createTestAuthOptions } from "../helpers/test-auth.ts";
 
-function createPluginOptions() {
-  return {
-    database: memoryAdapter({}),
-    emailAndPassword: { enabled: true },
-  };
-}
-
-describe("createBetterAuthPlugin", () => {
+describe("CarnoBetterAuth", () => {
   test("mounts Better Auth routes under /auth", async () => {
     await withTestApp(
       async (harness) => {
@@ -19,7 +12,7 @@ describe("createBetterAuthPlugin", () => {
         expect(response.status).not.toBe(404);
       },
       {
-        plugins: [createBetterAuthPlugin(createPluginOptions())],
+        plugins: [CarnoBetterAuth(createTestAuthOptions())],
         listen: true,
       },
     );
@@ -41,7 +34,7 @@ describe("createBetterAuthPlugin", () => {
         expect(response.status).not.toBe(405);
       },
       {
-        plugins: [createBetterAuthPlugin(createPluginOptions())],
+        plugins: [CarnoBetterAuth(createTestAuthOptions())],
         listen: true,
       },
     );
@@ -57,7 +50,7 @@ describe("createBetterAuthPlugin", () => {
         expect(typeof service.auth.handler).toBe("function");
       },
       {
-        plugins: [createBetterAuthPlugin(createPluginOptions())],
+        plugins: [CarnoBetterAuth(createTestAuthOptions())],
         listen: true,
       },
     );
