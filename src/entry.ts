@@ -1,6 +1,6 @@
 import { Carno } from "@carno.js/core";
 import { BetterAuthConfig } from "./better-auth.config.ts";
-import { DEFAULT_AUTH_BASE_PATH, normalizeAuthBasePath } from "./constants.ts";
+import { DEFAULT_AUTH_BASE_PATH, assertSafeAuthBasePath } from "./constants.ts";
 import type { BetterAuthModuleOptions } from "./interfaces/better-auth-module-options.interface.ts";
 import { BetterAuthMiddleware } from "./middleware/better-auth.middleware.ts";
 import { registerAuthRoutes } from "./routes/register-auth-routes.ts";
@@ -12,7 +12,7 @@ import { BetterAuthService } from "./better-auth.service.ts";
  */
 export function CarnoBetterAuth(options: BetterAuthModuleOptions = {}) {
   const config = new BetterAuthConfig(options);
-  const basePath = normalizeAuthBasePath(
+  const basePath = assertSafeAuthBasePath(
     config.options.basePath ?? DEFAULT_AUTH_BASE_PATH,
   );
 

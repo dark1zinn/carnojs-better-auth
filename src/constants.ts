@@ -39,6 +39,19 @@ export function normalizeAuthBasePath(basePath: string): string {
   return normalized;
 }
 
+/** Rejects base paths that would register a catch-all `/*` auth route. */
+export function assertSafeAuthBasePath(basePath: string): string {
+  const normalized = normalizeAuthBasePath(basePath);
+
+  if (normalized === "/") {
+    throw new Error(
+      'Invalid basePath "/": Better Auth must be mounted on a dedicated path (e.g. "/auth" or "/api/auth"), not the application root.',
+    );
+  }
+
+  return normalized;
+}
+
 export function isAuthPath(pathname: string, basePath: string): boolean {
   const normalized = normalizeAuthBasePath(basePath);
   return pathname === normalized || pathname.startsWith(`${normalized}/`);
