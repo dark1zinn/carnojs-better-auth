@@ -126,4 +126,46 @@ describe("BetterAuthMiddleware", () => {
       },
     );
   });
+
+  test("@Public() exempts routes from auth requirement on protected controller", async () => {
+    const { Public } = await import("../../src/index.ts");
+    const { publicRouteRegistry } = await import("../../src/middleware/public-route-registry.ts");
+
+    @Controller("/api")
+    @Middleware(BetterAuthMiddleware)
+    class MixedController {
+      @Get("/health")
+      @Public()
+      health() {
+        return { status: "ok" };
+      }
+
+      @Get("/profile")
+      profile(@Locals(AUTH_USER_KEY) user: { email: string }) {
+        return { email: user.email };
+      }
+    }
+
+    // Register the controller's public routes
+    publicRouteRegistry.registerController(MixedController, "/api");
+
+    await withAuthApp(
+      async ({ harness }) => {
+        // Public route should return 200 without session
+        const healthResponse = await harness.get("/api/health");
+        const healthBody = await readJson<{ status: string }>(healthResponse);
+        expect(healthResponse.status).toBe(200);
+        expect(healthBody.status).toBe("ok");
+
+        // Protected route should return 401 without session
+        const profileResponse = await harness.get("/api/profile");
+        const profileBody = await readJson<{ code: string; message: string }>(
+          profileResponse,
+        );
+        expect(profileResponse.status).toBe(401);
+        expect(profileBody.code).toBe(UNAUTHORIZED_ERROR_CODE);
+      },
+      { controllers: [MixedController], services: [BetterAuthMiddleware] },
+    );
+  });
 });

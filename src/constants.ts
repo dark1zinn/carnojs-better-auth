@@ -61,3 +61,6 @@ export function authWildcardPath(basePath: string): string {
   const normalized = normalizeAuthBasePath(basePath);
   return normalized === "/" ? "/*" : `${normalized}/*`;
 }
+
+export const AUTH_PUBLIC_METADATA_KEY =
+  "carnojs-better-auth:public";

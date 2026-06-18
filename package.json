@@ -50,5 +50,8 @@
     "better-auth": "^1.6.19",
     "tsdown": "^0.22.3",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "carnojs-better-auth": "^0.1.3"
   }
 }
