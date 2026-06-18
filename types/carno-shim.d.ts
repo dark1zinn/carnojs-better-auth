@@ -24,16 +24,31 @@ declare module "@carno.js/core" {
     get<T>(token: new (...args: never[]) => T): T;
   }
 
-  export function withTestApp(
-    routine: (harness: TestHarness) => Promise<void>,
-    options?: unknown,
-  ): Promise<void>;
+  export interface TestOptions {
+    config?: { exports?: unknown[]; disableStartupLog?: boolean };
+    listen?: boolean | number;
+    port?: number;
+    controllers?: (new (...args: never[]) => unknown)[];
+    services?: unknown[];
+    plugins?: Carno[];
+  }
 
   export interface TestHarness {
     resolve<T>(token: new (...args: never[]) => T): T;
     request(path: string, init?: RequestInit): Promise<Response>;
     get(path: string, init?: RequestInit): Promise<Response>;
     post(path: string, body?: unknown, init?: RequestInit): Promise<Response>;
+    put(path: string, body?: unknown, init?: RequestInit): Promise<Response>;
+    delete(path: string, init?: RequestInit): Promise<Response>;
     close(): Promise<void>;
   }
+
+  export function createTestHarness(
+    options?: TestOptions,
+  ): Promise<TestHarness>;
+
+  export function withTestApp(
+    routine: (harness: TestHarness) => Promise<void>,
+    options?: TestOptions,
+  ): Promise<void>;
 }
