@@ -1,10 +1,31 @@
 import { describe, expect, test } from 'bun:test';
+import { Carno } from '@carno.js/core';
 import { CarnoBetterAuth } from '../../src/entry.ts';
 import { DEFAULT_AUTH_BASE_PATH } from '../../src/constants.ts';
 import { createTestAuthOptions } from '../helpers/test-auth.ts';
 import { withAuthApp } from '../helpers/test-app.ts';
 
 describe('CarnoBetterAuth', () => {
+    test('rejects registering CarnoBetterAuth twice on the same app', () => {
+        const app = new Carno();
+        const authOptions = createTestAuthOptions();
+
+        app.use(CarnoBetterAuth(authOptions));
+
+        expect(() => app.use(CarnoBetterAuth(authOptions))).toThrow(
+            /already registered on this Carno app/,
+        );
+    });
+
+    test('allows CarnoBetterAuth on separate app instances', () => {
+        const authOptions = createTestAuthOptions();
+
+        expect(() => {
+            new Carno().use(CarnoBetterAuth(authOptions));
+            new Carno().use(CarnoBetterAuth(authOptions));
+        }).not.toThrow();
+    });
+
     test('rejects basePath at the application root', () => {
         expect(() => CarnoBetterAuth({ ...createTestAuthOptions(), basePath: '/' })).toThrow(
             /Invalid basePath/,

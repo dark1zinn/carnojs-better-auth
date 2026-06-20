@@ -36,6 +36,8 @@ app.use(
 app.listen(3000);
 ```
 
+Register **one** `CarnoBetterAuth()` plugin per Carno application. A second `app.use(CarnoBetterAuth(...))` throws immediately — duplicate registration would merge conflicting auth controllers and DI providers.
+
 Better Auth routes are mounted at **`/auth`** by default (for example `/auth/sign-up/email`, `/auth/get-session`). [Better Auth's own docs](https://www.better-auth.com/docs/installation) often use `/api/auth`; this plugin defaults to `/auth` because Carno apps typically prefix API controllers explicitly (for example `@Controller("/api/me")`) rather than nesting entire sub-apps. Set `basePath: "/api/auth"` if you want to match the Better Auth guides exactly.
 
 **Server** `baseURL` should be your app origin (for example `http://localhost:3000`). **Client** `baseURL` must include the auth path:

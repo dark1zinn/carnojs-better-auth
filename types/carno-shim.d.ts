@@ -34,6 +34,7 @@ declare module '@carno.js/core' {
 
     export class Carno {
         constructor(config?: CarnoConfig);
+        use(plugin: Carno): this;
         services(services: unknown): this;
         controllers(controllerClass: unknown | unknown[]): this;
         route(method: string, path: string, handler: unknown): this;
