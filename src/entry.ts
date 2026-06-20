@@ -1,10 +1,13 @@
 import { Carno } from '@carno.js/core';
 import { BetterAuthConfig } from './better-auth.config.ts';
+import { ensureBetterAuthUseGuard, markBetterAuthPlugin } from './better-auth.plugin-marker.ts';
 import { DEFAULT_AUTH_BASE_PATH, assertSafeAuthBasePath } from './constants.ts';
 import { createBetterAuthController } from './controllers/create-better-auth-controller.ts';
 import type { CarnoBetterAuthOptions } from './interfaces/carno-better-auth-options.interface.ts';
 import { BetterAuthMiddleware } from './middleware/better-auth.middleware.ts';
 import { BetterAuthService } from './better-auth.service.ts';
+
+ensureBetterAuthUseGuard();
 
 /**
  * Carno plugin that mounts Better Auth at `/auth/*` by default.
@@ -29,5 +32,5 @@ export function CarnoBetterAuth(options: CarnoBetterAuthOptions = {}) {
 
     plugin.controllers([AuthController]);
 
-    return plugin;
+    return markBetterAuthPlugin(plugin);
 }
