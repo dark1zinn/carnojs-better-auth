@@ -1,57 +1,57 @@
 {
-  "name": "carnojs-better-auth",
-  "version": "0.1.3",
-  "description": "Better Auth integration plugin for Carno.js applications",
-  "type": "module",
-  "author": "dark1zinn",
-  "license": "Apache-2.0",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dark1zinn/carnojs-better-auth.git"
-  },
-  "bugs": {
-    "url": "https://github.com/dark1zinn/carnojs-better-auth/issues"
-  },
-  "homepage": "https://github.com/dark1zinn/carnojs-better-auth#readme",
-  "keywords": [
-    "carnojs",
-    "carno.js",
-    "better-auth",
-    "authentication",
-    "bun"
-  ],
-  "files": [
-    "dist"
-  ],
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
-  "exports": {
-    "./package.json": "./package.json",
-    ".": {
-      "types": "./dist/index.d.mts",
-      "import": "./dist/index.mjs"
+    "name": "carnojs-better-auth",
+    "version": "0.1.3",
+    "description": "Better Auth integration plugin for Carno.js applications",
+    "type": "module",
+    "author": "dark1zinn",
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/dark1zinn/carnojs-better-auth.git"
+    },
+    "bugs": {
+        "url": "https://github.com/dark1zinn/carnojs-better-auth/issues"
+    },
+    "homepage": "https://github.com/dark1zinn/carnojs-better-auth#readme",
+    "keywords": [
+        "carnojs",
+        "carno.js",
+        "better-auth",
+        "authentication",
+        "bun"
+    ],
+    "files": [
+        "dist"
+    ],
+    "main": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.mts",
+    "exports": {
+        "./package.json": "./package.json",
+        ".": {
+            "types": "./dist/index.d.mts",
+            "import": "./dist/index.mjs"
+        }
+    },
+    "scripts": {
+        "build": "tsdown",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "test": "bun run build && bun test",
+        "test:unit": "bun test",
+        "typecheck": "tsc --noEmit -p tsconfig.typecheck.json && tsc --noEmit -p tsconfig.test.json"
+    },
+    "peerDependencies": {
+        "@carno.js/core": "^1.0.0",
+        "better-auth": "^1.0.0",
+        "typescript": "^5"
+    },
+    "devDependencies": {
+        "@carno.js/core": "^1.4.1",
+        "@types/bun": "latest",
+        "better-auth": "^1.6.19",
+        "prettier": "^3.6.2",
+        "tsdown": "^0.22.3",
+        "typescript": "^5.9.3"
     }
-  },
-  "scripts": {
-    "build": "tsdown",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "test": "bun run build && bun test",
-    "test:unit": "bun test",
-    "typecheck": "tsc --noEmit -p tsconfig.typecheck.json && tsc --noEmit -p tsconfig.test.json"
-  },
-  "peerDependencies": {
-    "@carno.js/core": "^1.0.0",
-    "better-auth": "^1.0.0",
-    "typescript": "^5"
-  },
-  "devDependencies": {
-    "@carno.js/core": "^1.4.1",
-    "@types/bun": "latest",
-    "better-auth": "^1.6.19",
-    "prettier": "^3.6.2",
-    "tsdown": "^0.22.3",
-    "typescript": "^5.9.3"
-  }
 }

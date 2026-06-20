@@ -1,40 +1,40 @@
-import { afterEach, describe, expect, test } from "bun:test";
-import { memoryAdapter } from "better-auth/adapters/memory";
-import { BetterAuthConfig } from "../../src/better-auth.config.ts";
+import { afterEach, describe, expect, test } from 'bun:test';
+import { memoryAdapter } from 'better-auth/adapters/memory';
+import { BetterAuthConfig } from '../../src/better-auth.config.ts';
 
-describe("BetterAuthConfig", () => {
-  afterEach(() => {
-    console.warn = console.warn.bind(console);
-  });
-
-  test("creates a shared auth instance with resolved options", () => {
-    const config = new BetterAuthConfig({
-      basePath: "/auth",
-      database: memoryAdapter({}),
-      emailAndPassword: { enabled: true },
+describe('BetterAuthConfig', () => {
+    afterEach(() => {
+        console.warn = console.warn.bind(console);
     });
 
-    expect(config.auth).toBeDefined();
-    expect(typeof config.auth.handler).toBe("function");
-    expect(config.options.basePath).toBe("/auth");
-  });
+    test('creates a shared auth instance with resolved options', () => {
+        const config = new BetterAuthConfig({
+            basePath: '/auth',
+            database: memoryAdapter({}),
+            emailAndPassword: { enabled: true },
+        });
 
-  test("warns when baseURL path does not match basePath", () => {
-    const calls: unknown[][] = [];
-    const original = console.warn;
-    console.warn = (...args: unknown[]) => {
-      calls.push(args);
-    };
-
-    new BetterAuthConfig({
-      baseURL: "http://localhost:3000/api/auth",
-      basePath: "/auth",
-      database: memoryAdapter({}),
-      emailAndPassword: { enabled: true },
+        expect(config.auth).toBeDefined();
+        expect(typeof config.auth.handler).toBe('function');
+        expect(config.options.basePath).toBe('/auth');
     });
 
-    console.warn = original;
-    expect(calls.length).toBeGreaterThan(0);
-    expect(String(calls[0]?.[0])).toContain("does not match basePath");
-  });
+    test('warns when baseURL path does not match basePath', () => {
+        const calls: unknown[][] = [];
+        const original = console.warn;
+        console.warn = (...args: unknown[]) => {
+            calls.push(args);
+        };
+
+        new BetterAuthConfig({
+            baseURL: 'http://localhost:3000/api/auth',
+            basePath: '/auth',
+            database: memoryAdapter({}),
+            emailAndPassword: { enabled: true },
+        });
+
+        console.warn = original;
+        expect(calls.length).toBeGreaterThan(0);
+        expect(String(calls[0]?.[0])).toContain('does not match basePath');
+    });
 });

@@ -19,18 +19,18 @@ bun add carnojs-better-auth @carno.js/core better-auth
 ## Quick start
 
 ```typescript
-import { Carno } from "@carno.js/core";
-import { CarnoBetterAuth } from "carnojs-better-auth";
-import { memoryAdapter } from "better-auth/adapters/memory";
+import { Carno } from '@carno.js/core';
+import { CarnoBetterAuth } from 'carnojs-better-auth';
+import { memoryAdapter } from 'better-auth/adapters/memory';
 
 const app = new Carno();
 
 app.use(
-  CarnoBetterAuth({
-    baseURL: "http://localhost:3000",
-    database: memoryAdapter({ user: [], session: [], account: [], verification: [] }),
-    emailAndPassword: { enabled: true },
-  }),
+    CarnoBetterAuth({
+        baseURL: 'http://localhost:3000',
+        database: memoryAdapter({ user: [], session: [], account: [], verification: [] }),
+        emailAndPassword: { enabled: true },
+    }),
 );
 
 app.listen(3000);
@@ -41,15 +41,12 @@ Better Auth routes are mounted at **`/auth`** by default (for example `/auth/sig
 **Server** `baseURL` should be your app origin (for example `http://localhost:3000`). **Client** `baseURL` must include the auth path:
 
 ```typescript
-import { createAuthClient } from "better-auth/client";
-import {
-  buildAuthClientBaseURL,
-  DEFAULT_AUTH_BASE_PATH,
-} from "carnojs-better-auth";
+import { createAuthClient } from 'better-auth/client';
+import { buildAuthClientBaseURL, DEFAULT_AUTH_BASE_PATH } from 'carnojs-better-auth';
 
 export const authClient = createAuthClient({
-  baseURL: buildAuthClientBaseURL("http://localhost:3000", DEFAULT_AUTH_BASE_PATH),
-  // equivalent to: baseURL: "http://localhost:3000/auth"
+    baseURL: buildAuthClientBaseURL('http://localhost:3000', DEFAULT_AUTH_BASE_PATH),
+    // equivalent to: baseURL: "http://localhost:3000/auth"
 });
 ```
 
@@ -63,18 +60,18 @@ Better Auth routes are registered as a Carno controller, so they inherit CORS fr
 
 ```typescript
 const cors = {
-  origins: "http://localhost:5173",
-  credentials: true,
+    origins: 'http://localhost:5173',
+    credentials: true,
 };
 
 const app = new Carno({ cors });
 
 app.use(
-  CarnoBetterAuth({
-    baseURL: "http://localhost:3000",
-    trustedOrigins: ["http://localhost:5173"],
-    // ...
-  }),
+    CarnoBetterAuth({
+        baseURL: 'http://localhost:3000',
+        trustedOrigins: ['http://localhost:5173'],
+        // ...
+    }),
 );
 ```
 
@@ -87,38 +84,38 @@ Auth routes run through Carno's controller pipeline, so host middleware applies 
 
 ```typescript
 const app = new Carno({
-  cors,
-  globalMiddlewares: [LoggingMiddleware],
+    cors,
+    globalMiddlewares: [LoggingMiddleware],
 });
 
 app.middlewares([RequestIdMiddleware]);
 
-app.use(CarnoBetterAuth({ baseURL: "http://localhost:3000", /* ... */ }));
+app.use(CarnoBetterAuth({ baseURL: 'http://localhost:3000' /* ... */ }));
 ```
 
-| Traffic | Carno middleware (`globalMiddlewares`, `app.middlewares()`, `@Middleware`) | `BetterAuthMiddleware` |
-|---------|----------------------------------------------------------------------------|-------------------------|
-| `/auth/*` | Yes | No (unless applied to the auth controller) |
-| Protected `@Controller` routes | When applied | Only when applied |
+| Traffic                        | Carno middleware (`globalMiddlewares`, `app.middlewares()`, `@Middleware`) | `BetterAuthMiddleware`                     |
+| ------------------------------ | -------------------------------------------------------------------------- | ------------------------------------------ |
+| `/auth/*`                      | Yes                                                                        | No (unless applied to the auth controller) |
+| Protected `@Controller` routes | When applied                                                               | Only when applied                          |
 
 For advanced cases where you must intercept the raw Better Auth `Request → Response` handler before Carno's `Context` layer, use `wrapHandler`:
 
 ```typescript
 app.use(
-  CarnoBetterAuth({
-    baseURL: "http://localhost:3000",
-    wrapHandler: (handler) => async (req) => {
-      const response = await handler(req);
-      const headers = new Headers(response.headers);
-      headers.set("x-auth-pipeline", "1");
-      return new Response(response.body, {
-        status: response.status,
-        statusText: response.statusText,
-        headers,
-      });
-    },
-    // ...
-  }),
+    CarnoBetterAuth({
+        baseURL: 'http://localhost:3000',
+        wrapHandler: (handler) => async (req) => {
+            const response = await handler(req);
+            const headers = new Headers(response.headers);
+            headers.set('x-auth-pipeline', '1');
+            return new Response(response.body, {
+                status: response.status,
+                statusText: response.statusText,
+                headers,
+            });
+        },
+        // ...
+    }),
 );
 ```
 
@@ -129,28 +126,19 @@ Prefer Carno middleware for logging, rate limits, and request IDs — it runs on
 Apply `BetterAuthMiddleware` to controllers that require a session. Authenticated user and session are exposed via `@Locals`:
 
 ```typescript
-import {
-  Controller,
-  Get,
-  Locals,
-  Middleware,
-} from "@carno.js/core";
-import {
-  AUTH_SESSION_KEY,
-  AUTH_USER_KEY,
-  BetterAuthMiddleware,
-} from "carnojs-better-auth";
+import { Controller, Get, Locals, Middleware } from '@carno.js/core';
+import { AUTH_SESSION_KEY, AUTH_USER_KEY, BetterAuthMiddleware } from 'carnojs-better-auth';
 
-@Controller("/me")
+@Controller('/me')
 @Middleware(BetterAuthMiddleware)
 class MeController {
-  @Get()
-  me(
-    @Locals(AUTH_USER_KEY) user: { id: string; email: string },
-    @Locals(AUTH_SESSION_KEY) session: { userId: string },
-  ) {
-    return { email: user.email, sessionUserId: session.userId };
-  }
+    @Get()
+    me(
+        @Locals(AUTH_USER_KEY) user: { id: string; email: string },
+        @Locals(AUTH_SESSION_KEY) session: { userId: string },
+    ) {
+        return { email: user.email, sessionUserId: session.userId };
+    }
 }
 ```
 
@@ -167,16 +155,16 @@ When session lookup fails unexpectedly (for example a database outage), protecte
 Inject `BetterAuthService` anywhere Carno DI resolves services:
 
 ```typescript
-import { Service } from "@carno.js/core";
-import { BetterAuthService } from "carnojs-better-auth";
+import { Service } from '@carno.js/core';
+import { BetterAuthService } from 'carnojs-better-auth';
 
 @Service()
 class AccountService {
-  constructor(private readonly auth: BetterAuthService) {}
+    constructor(private readonly auth: BetterAuthService) {}
 
-  async getSession(headers: Headers) {
-    return this.auth.auth.api.getSession({ headers });
-  }
+    async getSession(headers: Headers) {
+        return this.auth.auth.api.getSession({ headers });
+    }
 }
 ```
 
@@ -186,9 +174,9 @@ Pass `basePath` in the plugin options to change the mount point:
 
 ```typescript
 CarnoBetterAuth({
-  basePath: "/api/auth",
-  baseURL: "http://localhost:3000",
-  // ...
+    basePath: '/api/auth',
+    baseURL: 'http://localhost:3000',
+    // ...
 });
 ```
 
@@ -201,26 +189,26 @@ Use a dedicated path segment such as `/auth` or `/api/auth`. The value `/` (or a
 Carno does not support `app.use("/api", subApp)` path-prefix mounting. Prefix URLs on each controller and align Better Auth with the same `basePath`:
 
 ```typescript
-import { Carno, Controller, Get, Middleware } from "@carno.js/core";
-import { CarnoBetterAuth, BetterAuthMiddleware } from "carnojs-better-auth";
+import { Carno, Controller, Get, Middleware } from '@carno.js/core';
+import { CarnoBetterAuth, BetterAuthMiddleware } from 'carnojs-better-auth';
 
-@Controller("/api/me")
+@Controller('/api/me')
 @Middleware(BetterAuthMiddleware)
 class ApiMeController {
-  @Get()
-  me() {
-    return { ok: true };
-  }
+    @Get()
+    me() {
+        return { ok: true };
+    }
 }
 
 const app = new Carno();
 
 app.use(
-  CarnoBetterAuth({
-    basePath: "/api/auth",
-    baseURL: "http://localhost:3000",
-    // ...
-  }),
+    CarnoBetterAuth({
+        basePath: '/api/auth',
+        baseURL: 'http://localhost:3000',
+        // ...
+    }),
 );
 
 app.controllers([ApiMeController]);
@@ -235,19 +223,19 @@ When using a custom auth path, set the Better Auth client `baseURL` to include i
 
 ## Public API
 
-| Export | Description |
-|--------|-------------|
-| `CarnoBetterAuth(options?)` | Carno plugin factory |
-| `BetterAuthService` | Injectable wrapper around the Better Auth instance |
-| `BetterAuthMiddleware` | Session guard; populates `ctx.locals` |
-| `BetterAuthConfig` | Internal config token (advanced/testing) |
-| `AUTH_USER_KEY` / `AUTH_SESSION_KEY` | Locals keys for `@Locals()` |
-| `DEFAULT_AUTH_BASE_PATH` | Default mount path (`/auth`) |
-| `buildAuthClientBaseURL(origin, basePath)` | Client SDK base URL helper |
-| `BetterAuthModuleOptions` | Alias of Better Auth's `BetterAuthOptions` |
-| `CarnoBetterAuthOptions` | Plugin options (`BetterAuthModuleOptions` + optional `wrapHandler`) |
-| `AuthRouteHandler` / `AuthRouteHandlerWrapper` | Types for `wrapHandler` |
-| `AuthContext` / `AuthLocals` | Session typing helpers |
+| Export                                         | Description                                                         |
+| ---------------------------------------------- | ------------------------------------------------------------------- |
+| `CarnoBetterAuth(options?)`                    | Carno plugin factory                                                |
+| `BetterAuthService`                            | Injectable wrapper around the Better Auth instance                  |
+| `BetterAuthMiddleware`                         | Session guard; populates `ctx.locals`                               |
+| `BetterAuthConfig`                             | Internal config token (advanced/testing)                            |
+| `AUTH_USER_KEY` / `AUTH_SESSION_KEY`           | Locals keys for `@Locals()`                                         |
+| `DEFAULT_AUTH_BASE_PATH`                       | Default mount path (`/auth`)                                        |
+| `buildAuthClientBaseURL(origin, basePath)`     | Client SDK base URL helper                                          |
+| `BetterAuthModuleOptions`                      | Alias of Better Auth's `BetterAuthOptions`                          |
+| `CarnoBetterAuthOptions`                       | Plugin options (`BetterAuthModuleOptions` + optional `wrapHandler`) |
+| `AuthRouteHandler` / `AuthRouteHandlerWrapper` | Types for `wrapHandler`                                             |
+| `AuthContext` / `AuthLocals`                   | Session typing helpers                                              |
 
 ## Development
 
