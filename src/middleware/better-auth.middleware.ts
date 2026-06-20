@@ -7,6 +7,7 @@ import { resolveProtectedSession } from './resolve-protected-session.ts';
 export class BetterAuthMiddleware implements CarnoMiddleware {
     constructor(private readonly authService: BetterAuthService) {}
 
+    // fallow-ignore-next-line unused-class-members — invoked by Carno middleware pipeline
     async handle(ctx: Context, next: CarnoClosure): Promise<Response | void> {
         const result = await resolveProtectedSession(this.authService, ctx.headers);
 

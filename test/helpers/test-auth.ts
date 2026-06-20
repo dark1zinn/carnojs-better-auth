@@ -3,7 +3,7 @@ import { testUtils } from 'better-auth/plugins';
 import type { BetterAuthModuleOptions } from '../../src/interfaces/better-auth-module-options.interface.ts';
 
 /** Empty in-memory tables required by Better Auth's memory adapter. */
-export function createTestMemoryDatabase() {
+function createTestMemoryDatabase() {
     return memoryAdapter({
         user: [],
         session: [],

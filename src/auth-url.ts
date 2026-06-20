@@ -13,7 +13,7 @@ export function buildAuthClientBaseURL(appBaseURL: string, basePath: string): st
     return url.href.replace(/\/$/, '');
 }
 
-export function getBaseUrlPathname(baseURL: string): string | null {
+function getBaseUrlPathname(baseURL: string): string | null {
     try {
         return normalizeAuthBasePath(new URL(baseURL).pathname || '/');
     } catch {
