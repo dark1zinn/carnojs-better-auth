@@ -82,6 +82,34 @@ app.use(
 - **`cors`** — mirrors [Carno CORS config](https://github.com/carnojs/carno.js); wraps auth handlers and handles `OPTIONS` preflight on `/auth/*`.
 - **`trustedOrigins`** — Better Auth's own origin allowlist for cookies and CSRF ([cookies guide](https://www.better-auth.com/docs/concepts/cookies)). Configure both for cross-origin SPAs.
 
+## Middleware and auth routes
+
+Better Auth routes are registered as programmatic `Request → Response` handlers on the Carno router. They **do not** pass through Carno controller middleware (`app.middlewares()`, `@Middleware`, or `Carno({ globalMiddlewares })`). Only your Carno controllers run that onion pipeline.
+
+| Traffic | Carno controller middleware | `BetterAuthMiddleware` |
+|---------|----------------------------|-------------------------|
+| `/auth/*` | No | No (unless you wrap manually) |
+| `@Controller` routes | Yes | Only when applied |
+
+Use `wrapHandler` to add cross-cutting logic to auth endpoints (request IDs, logging, rate limits, security headers):
+
+```typescript
+app.use(
+  CarnoBetterAuth({
+    baseURL: "http://localhost:3000",
+    wrapHandler: (handler) => async (req) => {
+      const requestId = crypto.randomUUID();
+      const response = await handler(req);
+      response.headers.set("x-request-id", requestId);
+      return response;
+    },
+    // ...
+  }),
+);
+```
+
+`wrapHandler` runs around Better Auth's handler. When `cors` is also set, CORS wraps outermost so `OPTIONS` preflight is handled before your wrapper executes. Register Carno global middleware on controllers separately; duplicate any logic required on `/auth/*` via `wrapHandler`.
+
 ## Protecting routes
 
 Apply `BetterAuthMiddleware` to controllers that require a session. Authenticated user and session are exposed via `@Locals`:
@@ -203,7 +231,8 @@ When using a custom auth path, set the Better Auth client `baseURL` to include i
 | `DEFAULT_AUTH_BASE_PATH` | Default mount path (`/auth`) |
 | `buildAuthClientBaseURL(origin, basePath)` | Client SDK base URL helper |
 | `BetterAuthModuleOptions` | Alias of Better Auth's `BetterAuthOptions` |
-| `CarnoBetterAuthOptions` | Plugin options (`BetterAuthModuleOptions` + optional `cors`) |
+| `CarnoBetterAuthOptions` | Plugin options (`BetterAuthModuleOptions` + optional `cors`, `wrapHandler`) |
+| `AuthRouteHandler` / `AuthRouteHandlerWrapper` | Types for `wrapHandler` |
 | `AuthContext` / `AuthLocals` | Session typing helpers |
 
 ## Development
