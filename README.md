@@ -240,12 +240,18 @@ When using a custom auth path, set the Better Auth client `baseURL` to include i
 ## Development
 
 ```bash
-bun install
-bun run typecheck   # src + test projects
-bun run test:unit   # tests only (no rebuild)
-bun run test        # build + full test suite
-bun run build       # tsdown → dist/
+bun install          # installs Husky hooks via prepare
+bun run format       # Prettier write
+bun run format:check # Prettier CI check
+bun run fallow       # dead code / dupes / health report
+bun run fallow:fix   # apply auto-fixes
+bun run typecheck    # src + test projects
+bun run test:unit    # tests only (no rebuild)
+bun run test         # build + full test suite
+bun run build        # tsdown → dist/
 ```
+
+Pre-commit runs Prettier on staged files and applies Fallow fixes when TypeScript files are staged. Pre-push runs the full test suite.
 
 ## License
 
