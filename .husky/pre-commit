@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+bunx lint-staged
+
+STAGED_TS="$(git diff --cached --name-only --diff-filter=ACM | grep '\.ts$' || true)"
+
+if [ -n "$STAGED_TS" ]; then
+    bunx fallow fix --yes --no-create-config
+    echo "$STAGED_TS" | xargs git add
+fi

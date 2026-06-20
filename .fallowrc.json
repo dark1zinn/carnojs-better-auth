@@ -1,0 +1,9 @@
+{
+    "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+    "entry": ["src/index.ts", "test/**/*.test.ts", "examples/**/*.ts"],
+    "ignorePatterns": ["dist/**", "node_modules/**", "types/carno-shim.d.ts"],
+    "duplicates": {
+        "minOccurrences": 3
+    },
+    "rules": {}
+}

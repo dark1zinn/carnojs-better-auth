@@ -1,11 +1,11 @@
 {
-  "extends": "./tsconfig.json",
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"],
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@carno.js/core": ["./types/carno-shim.d.ts"]
-    }
-  }
+    "extends": "./tsconfig.json",
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules", "dist"],
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@carno.js/core": ["./types/carno-shim.d.ts"],
+        },
+    },
 }

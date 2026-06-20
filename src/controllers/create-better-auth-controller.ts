@@ -1,29 +1,17 @@
-import {
-  Controller,
-  Delete,
-  Get,
-  Head,
-  Patch,
-  Post,
-  Put,
-  Req,
-} from "@carno.js/core";
-import { BetterAuthService } from "../better-auth.service.ts";
-import type {
-  AuthRouteHandler,
-  AuthRouteHandlerWrapper,
-} from "../types/auth-route-handler.ts";
+import { Controller, Delete, Get, Head, Patch, Post, Put, Req } from '@carno.js/core';
+import { BetterAuthService } from '../better-auth.service.ts';
+import type { AuthRouteHandler, AuthRouteHandlerWrapper } from '../types/auth-route-handler.ts';
 
 export type CreateBetterAuthControllerOptions = {
-  wrapHandler?: AuthRouteHandlerWrapper;
+    wrapHandler?: AuthRouteHandlerWrapper;
 };
 
 function resolveAuthHandler(
-  authService: BetterAuthService,
-  wrapHandler?: AuthRouteHandlerWrapper,
+    authService: BetterAuthService,
+    wrapHandler?: AuthRouteHandlerWrapper,
 ): AuthRouteHandler {
-  const baseHandler: AuthRouteHandler = (req) => authService.auth.handler(req);
-  return wrapHandler ? wrapHandler(baseHandler) : baseHandler;
+    const baseHandler: AuthRouteHandler = (req) => authService.auth.handler(req);
+    return wrapHandler ? wrapHandler(baseHandler) : baseHandler;
 }
 
 /**
@@ -31,39 +19,39 @@ function resolveAuthHandler(
  * Compiled on the host app so CORS and middleware apply natively.
  */
 export function createBetterAuthController(
-  basePath: string,
-  options: CreateBetterAuthControllerOptions = {},
+    basePath: string,
+    options: CreateBetterAuthControllerOptions = {},
 ) {
-  const { wrapHandler } = options;
+    const { wrapHandler } = options;
 
-  @Controller(basePath)
-  class BetterAuthRoutesController {
-    private readonly authHandler: AuthRouteHandler;
+    @Controller(basePath)
+    class BetterAuthRoutesController {
+        private readonly authHandler: AuthRouteHandler;
 
-    constructor(authService: BetterAuthService) {
-      this.authHandler = resolveAuthHandler(authService, wrapHandler);
+        constructor(authService: BetterAuthService) {
+            this.authHandler = resolveAuthHandler(authService, wrapHandler);
+        }
+
+        @Get('/*')
+        @Post('/*')
+        @Put('/*')
+        @Patch('/*')
+        @Delete('/*')
+        @Head('/*')
+        async handleWildcard(@Req() req: Request): Promise<Response> {
+            return this.authHandler(req);
+        }
+
+        @Get('')
+        @Post('')
+        @Put('')
+        @Patch('')
+        @Delete('')
+        @Head('')
+        async handleExact(@Req() req: Request): Promise<Response> {
+            return this.authHandler(req);
+        }
     }
 
-    @Get("/*")
-    @Post("/*")
-    @Put("/*")
-    @Patch("/*")
-    @Delete("/*")
-    @Head("/*")
-    async handleWildcard(@Req() req: Request): Promise<Response> {
-      return this.authHandler(req);
-    }
-
-    @Get("")
-    @Post("")
-    @Put("")
-    @Patch("")
-    @Delete("")
-    @Head("")
-    async handleExact(@Req() req: Request): Promise<Response> {
-      return this.authHandler(req);
-    }
-  }
-
-  return BetterAuthRoutesController;
+    return BetterAuthRoutesController;
 }
