@@ -1,10 +1,9 @@
 import { Carno } from "@carno.js/core";
 import { BetterAuthConfig } from "./better-auth.config.ts";
 import { DEFAULT_AUTH_BASE_PATH, assertSafeAuthBasePath } from "./constants.ts";
+import { createBetterAuthController } from "./controllers/create-better-auth-controller.ts";
 import type { CarnoBetterAuthOptions } from "./interfaces/carno-better-auth-options.interface.ts";
 import { BetterAuthMiddleware } from "./middleware/better-auth.middleware.ts";
-import { composeAuthRouteHandler } from "./routes/compose-auth-handler.ts";
-import { registerAuthRoutes } from "./routes/register-auth-routes.ts";
 import { BetterAuthService } from "./better-auth.service.ts";
 
 /**
@@ -12,15 +11,16 @@ import { BetterAuthService } from "./better-auth.service.ts";
  * Prefix the whole app (e.g. nested controllers at `/api`) to change the public URL.
  */
 export function CarnoBetterAuth(options: CarnoBetterAuthOptions = {}) {
-  const { cors, wrapHandler, ...authOptions } = options;
+  const { wrapHandler, ...authOptions } = options;
   const config = new BetterAuthConfig(authOptions);
   const basePath = assertSafeAuthBasePath(
     config.options.basePath ?? DEFAULT_AUTH_BASE_PATH,
   );
 
+  const AuthController = createBetterAuthController(basePath, { wrapHandler });
+
   const plugin = new Carno({
     exports: [BetterAuthService, BetterAuthMiddleware],
-    cors,
   });
 
   plugin.services([
@@ -29,12 +29,7 @@ export function CarnoBetterAuth(options: CarnoBetterAuthOptions = {}) {
     BetterAuthMiddleware,
   ]);
 
-  const authHandler = composeAuthRouteHandler(
-    (req) => config.auth.handler(req),
-    { wrapHandler, cors },
-  );
-
-  registerAuthRoutes(plugin, basePath, authHandler);
+  plugin.controllers([AuthController]);
 
   return plugin;
 }

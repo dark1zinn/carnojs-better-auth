@@ -59,7 +59,7 @@ Set `baseURL` in your Better Auth server options (or the `BETTER_AUTH_URL` env v
 
 ## Cross-origin requests (CORS)
 
-Auth routes are registered programmatically on the Carno router, so they do not automatically inherit CORS headers from a host `Carno({ cors })` instance. Pass the same `cors` config to `CarnoBetterAuth` when a browser client calls `/auth/*` from another origin:
+Better Auth routes are registered as a Carno controller, so they inherit CORS from the host app. Configure CORS once on your main `Carno` instance:
 
 ```typescript
 const cors = {
@@ -72,43 +72,57 @@ const app = new Carno({ cors });
 app.use(
   CarnoBetterAuth({
     baseURL: "http://localhost:3000",
-    cors, // required for auth routes to receive Access-Control-* headers
     trustedOrigins: ["http://localhost:5173"],
     // ...
   }),
 );
 ```
 
-- **`cors`** — mirrors [Carno CORS config](https://github.com/carnojs/carno.js); wraps auth handlers and handles `OPTIONS` preflight on `/auth/*`.
+- **`cors`** (on `Carno`) — [Carno CORS config](https://github.com/carnojs/carno.js); applies to `/auth/*` and all other controller routes. Unmatched `OPTIONS` preflight requests receive Carno's standard preflight response.
 - **`trustedOrigins`** — Better Auth's own origin allowlist for cookies and CSRF ([cookies guide](https://www.better-auth.com/docs/concepts/cookies)). Configure both for cross-origin SPAs.
 
 ## Middleware and auth routes
 
-Better Auth routes are registered as programmatic `Request → Response` handlers on the Carno router. They **do not** pass through Carno controller middleware (`app.middlewares()`, `@Middleware`, or `Carno({ globalMiddlewares })`). Only your Carno controllers run that onion pipeline.
+Auth routes run through Carno's controller pipeline, so host middleware applies automatically:
 
-| Traffic | Carno controller middleware | `BetterAuthMiddleware` |
-|---------|----------------------------|-------------------------|
-| `/auth/*` | No | No (unless you wrap manually) |
-| `@Controller` routes | Yes | Only when applied |
+```typescript
+const app = new Carno({
+  cors,
+  globalMiddlewares: [LoggingMiddleware],
+});
 
-Use `wrapHandler` to add cross-cutting logic to auth endpoints (request IDs, logging, rate limits, security headers):
+app.middlewares([RequestIdMiddleware]);
+
+app.use(CarnoBetterAuth({ baseURL: "http://localhost:3000", /* ... */ }));
+```
+
+| Traffic | Carno middleware (`globalMiddlewares`, `app.middlewares()`, `@Middleware`) | `BetterAuthMiddleware` |
+|---------|----------------------------------------------------------------------------|-------------------------|
+| `/auth/*` | Yes | No (unless applied to the auth controller) |
+| Protected `@Controller` routes | When applied | Only when applied |
+
+For advanced cases where you must intercept the raw Better Auth `Request → Response` handler before Carno's `Context` layer, use `wrapHandler`:
 
 ```typescript
 app.use(
   CarnoBetterAuth({
     baseURL: "http://localhost:3000",
     wrapHandler: (handler) => async (req) => {
-      const requestId = crypto.randomUUID();
       const response = await handler(req);
-      response.headers.set("x-request-id", requestId);
-      return response;
+      const headers = new Headers(response.headers);
+      headers.set("x-auth-pipeline", "1");
+      return new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers,
+      });
     },
     // ...
   }),
 );
 ```
 
-`wrapHandler` runs around Better Auth's handler. When `cors` is also set, CORS wraps outermost so `OPTIONS` preflight is handled before your wrapper executes. Register Carno global middleware on controllers separately; duplicate any logic required on `/auth/*` via `wrapHandler`.
+Prefer Carno middleware for logging, rate limits, and request IDs — it runs on `/auth/*` without extra configuration.
 
 ## Protecting routes
 
@@ -231,7 +245,7 @@ When using a custom auth path, set the Better Auth client `baseURL` to include i
 | `DEFAULT_AUTH_BASE_PATH` | Default mount path (`/auth`) |
 | `buildAuthClientBaseURL(origin, basePath)` | Client SDK base URL helper |
 | `BetterAuthModuleOptions` | Alias of Better Auth's `BetterAuthOptions` |
-| `CarnoBetterAuthOptions` | Plugin options (`BetterAuthModuleOptions` + optional `cors`, `wrapHandler`) |
+| `CarnoBetterAuthOptions` | Plugin options (`BetterAuthModuleOptions` + optional `wrapHandler`) |
 | `AuthRouteHandler` / `AuthRouteHandlerWrapper` | Types for `wrapHandler` |
 | `AuthContext` / `AuthLocals` | Session typing helpers |
 

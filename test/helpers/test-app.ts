@@ -1,4 +1,5 @@
 import {
+  type CorsConfig,
   type TestHarness,
   type TestOptions,
   withTestApp,
@@ -17,6 +18,8 @@ export type AuthTestContext = {
 
 export type AuthTestOptions = Omit<TestOptions, "plugins" | "listen"> & {
   authOptions?: CarnoBetterAuthOptions;
+  /** Host Carno CORS config (applied via `config.cors`). */
+  cors?: CorsConfig;
 };
 
 async function resolveTestHelpers(
@@ -30,7 +33,12 @@ export async function withAuthApp(
   routine: (context: AuthTestContext) => Promise<void>,
   options: AuthTestOptions = {},
 ): Promise<void> {
-  const { authOptions = createTestAuthOptions(), ...harnessOptions } = options;
+  const {
+    authOptions = createTestAuthOptions(),
+    cors,
+    config,
+    ...harnessOptions
+  } = options;
 
   await withTestApp(
     async (harness) => {
@@ -41,6 +49,7 @@ export async function withAuthApp(
     },
     {
       ...harnessOptions,
+      config: cors ? { ...config, cors } : config,
       plugins: [CarnoBetterAuth(authOptions)],
       listen: true,
     },
