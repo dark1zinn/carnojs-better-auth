@@ -1,0 +1,17 @@
+{
+    // Prettier config — JSON5 allows comments
+    semi: true,
+    singleQuote: true,
+    tabWidth: 4,
+    useTabs: false,
+    endOfLine: 'lf',
+    trailingComma: 'all',
+    printWidth: 100,
+    arrowParens: 'always',
+    overrides: [
+        {
+            files: ['tsconfig*.json', 'jsconfig.json'],
+            options: { parser: 'jsonc' },
+        },
+    ],
+}
