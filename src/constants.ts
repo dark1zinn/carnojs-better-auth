@@ -9,14 +9,13 @@ export const AUTH_USER_KEY = "authUser";
 /** `ctx.locals` key for the authenticated Better Auth session. */
 export const AUTH_SESSION_KEY = "authSession";
 
-/** HTTP methods forwarded to Better Auth's catch-all handler. */
-export const AUTH_HTTP_METHODS = [
+/** HTTP methods registered on the Better Auth Carno controller (OPTIONS omitted — host CORS handles preflight). */
+export const AUTH_ROUTE_METHODS = [
   "GET",
   "POST",
   "PUT",
   "PATCH",
   "DELETE",
-  "OPTIONS",
   "HEAD",
 ] as const;
 

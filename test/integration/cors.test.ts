@@ -27,10 +27,8 @@ describe("Better Auth CORS integration", () => {
         );
       },
       {
-        authOptions: {
-          ...createTestAuthOptions(),
-          cors,
-        },
+        authOptions: createTestAuthOptions(),
+        cors,
       },
     );
   });
@@ -57,10 +55,8 @@ describe("Better Auth CORS integration", () => {
         );
       },
       {
-        authOptions: {
-          ...createTestAuthOptions(),
-          cors,
-        },
+        authOptions: createTestAuthOptions(),
+        cors,
       },
     );
   });
@@ -88,10 +84,8 @@ describe("Better Auth CORS integration", () => {
         );
       },
       {
-        authOptions: {
-          ...createTestAuthOptions(),
-          cors,
-        },
+        authOptions: createTestAuthOptions(),
+        cors,
       },
     );
   });

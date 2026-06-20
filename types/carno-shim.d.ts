@@ -2,6 +2,12 @@ declare module "@carno.js/core" {
   export function Service(options?: { scope?: string }): ClassDecorator;
   export function Controller(path: string): ClassDecorator;
   export function Get(path?: string): MethodDecorator;
+  export function Post(path?: string): MethodDecorator;
+  export function Put(path?: string): MethodDecorator;
+  export function Patch(path?: string): MethodDecorator;
+  export function Delete(path?: string): MethodDecorator;
+  export function Head(path?: string): MethodDecorator;
+  export function Req(): ParameterDecorator;
   export function Middleware(middleware: unknown): ClassDecorator & MethodDecorator;
   export function Locals(key?: string): ParameterDecorator;
 
@@ -17,9 +23,19 @@ declare module "@carno.js/core" {
     handle(ctx: Context, next: CarnoClosure): Promise<Response | void>;
   }
 
+  export type MiddlewareEntry = unknown;
+
+  export interface CarnoConfig {
+    exports?: unknown[];
+    globalMiddlewares?: MiddlewareEntry[];
+    disableStartupLog?: boolean;
+    cors?: CorsConfig;
+  }
+
   export class Carno {
-    constructor(config?: { exports?: unknown[]; cors?: CorsConfig });
+    constructor(config?: CarnoConfig);
     services(services: unknown): this;
+    controllers(controllerClass: unknown | unknown[]): this;
     route(method: string, path: string, handler: unknown): this;
     get<T>(token: new (...args: never[]) => T): T;
   }
@@ -48,7 +64,7 @@ declare module "@carno.js/core" {
   export class ServiceUnavailableException extends HttpException {}
 
   export interface TestOptions {
-    config?: { exports?: unknown[]; disableStartupLog?: boolean };
+    config?: CarnoConfig;
     listen?: boolean | number;
     port?: number;
     controllers?: (new (...args: never[]) => unknown)[];
