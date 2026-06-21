@@ -10,6 +10,28 @@ Mounts [Better Auth](https://www.better-auth.com/) HTTP routes on your Carno app
 - `@carno.js/core` >= 1.0
 - `better-auth` >= 1.0
 
+## Required configuration
+
+Better Auth needs a signing secret and a public base URL for cookie-based auth, OAuth callbacks, and redirects. The Carno plugin validates these at startup (before the first request) so misconfiguration fails fast.
+
+| Variable / option                | Required when                                                | Notes                                                                                                                   |
+| -------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `secret` or `BETTER_AUTH_SECRET` | Always (unless `skipValidation: true`)                       | At least **32 characters**. Generate with `npx auth secret` or `openssl rand -base64 32`.                               |
+| `baseURL` or `BETTER_AUTH_URL`   | Cookie-based auth (database sessions, email/password, OAuth) | App origin, e.g. `http://localhost:3000`. Dynamic multi-host setups can use `baseURL: { allowedHosts: [...] }` instead. |
+
+```typescript
+app.use(
+    CarnoBetterAuth({
+        secret: process.env.BETTER_AUTH_SECRET,
+        baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:3000',
+        database: /* ... */,
+        emailAndPassword: { enabled: true },
+    }),
+);
+```
+
+For tests or edge deployments, opt out with `skipValidation: true`, or set `strict: false` to log warnings instead of throwing.
+
 ## Install
 
 ```bash
@@ -27,6 +49,7 @@ const app = new Carno();
 
 app.use(
     CarnoBetterAuth({
+        secret: process.env.BETTER_AUTH_SECRET,
         baseURL: 'http://localhost:3000',
         database: memoryAdapter({ user: [], session: [], account: [], verification: [] }),
         emailAndPassword: { enabled: true },
@@ -54,7 +77,7 @@ export const authClient = createAuthClient({
 
 If `baseURL` includes a path that does not match `basePath` (for example `http://localhost:3000/api/auth` with default `basePath: "/auth"`), the plugin logs a startup warning with the corrected client URL.
 
-Set `baseURL` in your Better Auth server options (or the `BETTER_AUTH_URL` env var). Better Auth uses it for callbacks, redirects, and cookie handling.
+Set `baseURL` in your Better Auth server options (or the `BETTER_AUTH_URL` env var). Better Auth uses it for callbacks, redirects, and cookie handling. The plugin rejects missing or undersized secrets and missing base URLs at startup — see [Required configuration](#required-configuration).
 
 ## Cross-origin requests (CORS)
 

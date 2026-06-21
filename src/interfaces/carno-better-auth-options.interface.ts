@@ -12,4 +12,11 @@ export type CarnoBetterAuthOptions = BetterAuthModuleOptions & {
     wrapHandler?: AuthRouteHandlerWrapper;
     /** Default options for {@link BetterAuthMiddleware} registered by the plugin. */
     middleware?: BetterAuthMiddlewareOptions;
+    /** Skip Carno-side auth config validation (for tests and advanced setups). */
+    skipValidation?: boolean;
+    /**
+     * When `false`, log validation problems instead of throwing at plugin init.
+     * Defaults to `true`.
+     */
+    strict?: boolean;
 };

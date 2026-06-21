@@ -15,8 +15,14 @@ ensureBetterAuthUseGuard();
  * Prefix the whole app (e.g. nested controllers at `/api`) to change the public URL.
  */
 export function CarnoBetterAuth(options: CarnoBetterAuthOptions = {}) {
-    const { wrapHandler, middleware: middlewareOptions, ...authOptions } = options;
-    const config = new BetterAuthConfig(authOptions);
+    const {
+        wrapHandler,
+        middleware: middlewareOptions,
+        skipValidation,
+        strict,
+        ...authOptions
+    } = options;
+    const config = new BetterAuthConfig(authOptions, { skipValidation, strict });
     const middlewareConfig = new BetterAuthMiddlewareConfig(middlewareOptions);
     const basePath = assertSafeAuthBasePath(config.options.basePath ?? DEFAULT_AUTH_BASE_PATH);
 
