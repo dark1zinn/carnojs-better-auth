@@ -152,6 +152,36 @@ Unauthenticated requests receive **401** with Better Auth's standard JSON error 
 
 When session lookup fails unexpectedly (for example a database outage), protected routes return **503** with Carno's standard `{ "statusCode": 503, "message": "Authentication service unavailable" }` payload instead of an unhandled `500`.
 
+### Session freshness
+
+By default, `BetterAuthMiddleware` enforces Better Auth's [session freshness](https://www.better-auth.com/docs/concepts/session-management) (`session.freshAge`, default 1 day) — the same rule used by sensitive Better Auth endpoints such as change email, disable 2FA, and delete account. Custom Carno routes protected by the middleware behave consistently out of the box.
+
+When the session is stale, the middleware returns **403** with Better Auth's standard JSON error shape:
+
+```json
+{ "code": "SESSION_NOT_FRESH", "message": "Session is not fresh" }
+```
+
+For routes that only need to verify a session exists (for example read-only profile data), opt out globally or per controller:
+
+```typescript
+CarnoBetterAuth({
+    middleware: { requireFreshSession: false },
+    // ...
+});
+
+// or per controller
+import { createBetterAuthMiddleware } from 'carnojs-better-auth';
+
+@Controller('/feed')
+@Middleware(createBetterAuthMiddleware({ requireFreshSession: false }))
+class FeedController {
+    // ...
+}
+```
+
+Set `session.freshAge` to `0` in Better Auth options to disable freshness checks entirely.
+
 ## Programmatic access
 
 Inject `BetterAuthService` anywhere Carno DI resolves services:
@@ -225,19 +255,20 @@ When using a custom auth path, set the Better Auth client `baseURL` to include i
 
 ## Public API
 
-| Export                                         | Description                                                         |
-| ---------------------------------------------- | ------------------------------------------------------------------- |
-| `CarnoBetterAuth(options?)`                    | Carno plugin factory                                                |
-| `BetterAuthService`                            | Injectable wrapper around the Better Auth instance                  |
-| `BetterAuthMiddleware`                         | Session guard; populates `ctx.locals`                               |
-| `BetterAuthConfig`                             | Internal config token (advanced/testing)                            |
-| `AUTH_USER_KEY` / `AUTH_SESSION_KEY`           | Locals keys for `@Locals()`                                         |
-| `DEFAULT_AUTH_BASE_PATH`                       | Default mount path (`/auth`)                                        |
-| `buildAuthClientBaseURL(origin, basePath)`     | Client SDK base URL helper                                          |
-| `BetterAuthModuleOptions`                      | Alias of Better Auth's `BetterAuthOptions`                          |
-| `CarnoBetterAuthOptions`                       | Plugin options (`BetterAuthModuleOptions` + optional `wrapHandler`) |
-| `AuthRouteHandler` / `AuthRouteHandlerWrapper` | Types for `wrapHandler`                                             |
-| `AuthContext` / `AuthLocals`                   | Session typing helpers                                              |
+| Export                                         | Description                                                           |
+| ---------------------------------------------- | --------------------------------------------------------------------- |
+| `CarnoBetterAuth(options?)`                    | Carno plugin factory                                                  |
+| `BetterAuthService`                            | Injectable wrapper around the Better Auth instance                    |
+| `BetterAuthMiddleware`                         | Session guard; populates `ctx.locals` (freshness enforced by default) |
+| `createBetterAuthMiddleware(options?)`         | Per-controller session guard with optional freshness opt-out          |
+| `BetterAuthConfig`                             | Internal config token (advanced/testing)                              |
+| `AUTH_USER_KEY` / `AUTH_SESSION_KEY`           | Locals keys for `@Locals()`                                           |
+| `DEFAULT_AUTH_BASE_PATH`                       | Default mount path (`/auth`)                                          |
+| `buildAuthClientBaseURL(origin, basePath)`     | Client SDK base URL helper                                            |
+| `BetterAuthModuleOptions`                      | Alias of Better Auth's `BetterAuthOptions`                            |
+| `CarnoBetterAuthOptions`                       | Plugin options (`BetterAuthModuleOptions` + optional `wrapHandler`)   |
+| `AuthRouteHandler` / `AuthRouteHandlerWrapper` | Types for `wrapHandler`                                               |
+| `AuthContext` / `AuthLocals`                   | Session typing helpers                                                |
 
 ## Development
 
