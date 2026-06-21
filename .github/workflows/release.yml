@@ -27,6 +27,8 @@ jobs:
     publish:
         needs: ci
         runs-on: ubuntu-latest
+        env:
+            HUSKY: '0'
         steps:
             - name: Resolve release tag
               id: meta
