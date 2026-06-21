@@ -7,6 +7,7 @@ import {
     AUTH_USER_KEY,
     BetterAuthConfig,
     BetterAuthMiddleware,
+    createBetterAuthMiddleware,
     BetterAuthService,
     CarnoBetterAuth,
     DEFAULT_AUTH_BASE_PATH,
@@ -17,6 +18,7 @@ describe('public exports', () => {
         expect(typeof CarnoBetterAuth).toBe('function');
         expect(BetterAuthService).toBeDefined();
         expect(BetterAuthMiddleware).toBeDefined();
+        expect(typeof createBetterAuthMiddleware).toBe('function');
         expect(BetterAuthConfig).toBeDefined();
         expect(AUTH_USER_KEY).toBe('authUser');
         expect(AUTH_SESSION_KEY).toBe('authSession');

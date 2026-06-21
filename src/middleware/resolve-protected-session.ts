@@ -1,15 +1,19 @@
 import { isAPIError } from 'better-auth/api';
 import { ServiceUnavailableException } from '@carno.js/core';
 import type { BetterAuthService } from '../better-auth.service.ts';
+import type { BetterAuthMiddlewareOptions } from '../interfaces/better-auth-middleware-options.interface.ts';
 import type { AuthContext } from '../types.ts';
 import {
     apiErrorToResponse,
     AUTH_UNAVAILABLE_MESSAGE,
+    sessionNotFreshResponse,
     unauthorizedResponse,
 } from './auth-api-error.ts';
+import { getSessionFreshAgeSeconds, isSessionFresh } from './session-freshness.ts';
 
 export { AUTH_UNAVAILABLE_MESSAGE } from './auth-api-error.ts';
 export { UNAUTHORIZED_ERROR_CODE, UNAUTHORIZED_ERROR_MESSAGE } from './auth-api-error.ts';
+export { SESSION_NOT_FRESH_ERROR_CODE, SESSION_NOT_FRESH_ERROR_MESSAGE } from './auth-api-error.ts';
 
 function isAuthError(error: unknown): boolean {
     if (!error || typeof error !== 'object') {
@@ -33,12 +37,22 @@ export type ProtectedSessionResult =
 export async function resolveProtectedSession(
     authService: BetterAuthService,
     headers: Headers,
+    options: BetterAuthMiddlewareOptions = {},
 ): Promise<ProtectedSessionResult> {
     try {
         const session = await authService.auth.api.getSession({ headers });
 
         if (!session) {
             return { ok: false, response: unauthorizedResponse() };
+        }
+
+        const requireFreshSession = options.requireFreshSession ?? true;
+
+        if (
+            requireFreshSession &&
+            !isSessionFresh(session, getSessionFreshAgeSeconds(authService))
+        ) {
+            return { ok: false, response: sessionNotFreshResponse() };
         }
 
         return { ok: true, session };

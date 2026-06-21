@@ -1,4 +1,5 @@
 import type { BetterAuthModuleOptions } from './better-auth-module-options.interface.ts';
+import type { BetterAuthMiddlewareOptions } from './better-auth-middleware-options.interface.ts';
 import type { AuthRouteHandlerWrapper } from '../types/auth-route-handler.ts';
 
 /** Options accepted by {@link CarnoBetterAuth}. */
@@ -9,4 +10,6 @@ export type CarnoBetterAuthOptions = BetterAuthModuleOptions & {
      * concerns; use this only when you need to intercept before Better Auth runs.
      */
     wrapHandler?: AuthRouteHandlerWrapper;
+    /** Default options for {@link BetterAuthMiddleware} registered by the plugin. */
+    middleware?: BetterAuthMiddlewareOptions;
 };

@@ -4,6 +4,7 @@ import { ensureBetterAuthUseGuard, markBetterAuthPlugin } from './better-auth.pl
 import { DEFAULT_AUTH_BASE_PATH, assertSafeAuthBasePath } from './constants.ts';
 import { createBetterAuthController } from './controllers/create-better-auth-controller.ts';
 import type { CarnoBetterAuthOptions } from './interfaces/carno-better-auth-options.interface.ts';
+import { BetterAuthMiddlewareConfig } from './middleware/better-auth-middleware.config.ts';
 import { BetterAuthMiddleware } from './middleware/better-auth.middleware.ts';
 import { BetterAuthService } from './better-auth.service.ts';
 
@@ -14,8 +15,9 @@ ensureBetterAuthUseGuard();
  * Prefix the whole app (e.g. nested controllers at `/api`) to change the public URL.
  */
 export function CarnoBetterAuth(options: CarnoBetterAuthOptions = {}) {
-    const { wrapHandler, ...authOptions } = options;
+    const { wrapHandler, middleware: middlewareOptions, ...authOptions } = options;
     const config = new BetterAuthConfig(authOptions);
+    const middlewareConfig = new BetterAuthMiddlewareConfig(middlewareOptions);
     const basePath = assertSafeAuthBasePath(config.options.basePath ?? DEFAULT_AUTH_BASE_PATH);
 
     const AuthController = createBetterAuthController(basePath, { wrapHandler });
@@ -26,6 +28,7 @@ export function CarnoBetterAuth(options: CarnoBetterAuthOptions = {}) {
 
     plugin.services([
         { token: BetterAuthConfig, useValue: config },
+        { token: BetterAuthMiddlewareConfig, useValue: middlewareConfig },
         BetterAuthService,
         BetterAuthMiddleware,
     ]);
