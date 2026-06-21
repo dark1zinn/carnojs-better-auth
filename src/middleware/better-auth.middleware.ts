@@ -43,7 +43,6 @@ export function createBetterAuthMiddleware(
     class ConfiguredBetterAuthMiddleware implements CarnoMiddleware {
         constructor(private readonly authService: BetterAuthService) {}
 
-        // fallow-ignore-next-line unused-class-member
         async handle(ctx: Context, next: CarnoClosure): Promise<Response | void> {
             return applyProtectedSession(this.authService, ctx, next, options);
         }

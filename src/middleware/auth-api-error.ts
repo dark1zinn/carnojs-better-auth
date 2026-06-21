@@ -1,5 +1,4 @@
 import { APIError } from 'better-auth/api';
-import { BASE_ERROR_CODES } from '@better-auth/core/error';
 
 export const AUTH_UNAVAILABLE_MESSAGE = 'Authentication service unavailable';
 
@@ -28,5 +27,10 @@ export function unauthorizedResponse(): Response {
 }
 
 export function sessionNotFreshResponse(): Response {
-    return apiErrorToResponse(APIError.from('FORBIDDEN', BASE_ERROR_CODES.SESSION_NOT_FRESH));
+    return apiErrorToResponse(
+        new APIError('FORBIDDEN', {
+            code: SESSION_NOT_FRESH_ERROR_CODE,
+            message: SESSION_NOT_FRESH_ERROR_MESSAGE,
+        }),
+    );
 }
